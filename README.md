@@ -440,5 +440,5 @@ Este proyecto es de uso educativo.
 ---
 
 ## Autor
-
+Carlos Arturo Castro Castro
 Creado como tutorial paso a paso para aprender a construir APIs genericas con .NET 9.
