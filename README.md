@@ -1,6 +1,12 @@
 # ApiGenerica - API REST Generica Multi-Base de Datos
 
-API REST generica para operaciones CRUD sobre cualquier tabla de base de datos. Soporta multiples motores de base de datos con una sola configuracion.
+![.NET Version](https://img.shields.io/badge/.NET-9.0-blue?logo=dotnet)
+![Database](https://img.shields.io/badge/DB-SQL_Server_%7C_Postgres_%7C_MySQL-brightgreen?logo=databricks)
+![Auth](https://img.shields.io/badge/Auth-JWT_&_BCrypt-gold?logo=jsonwebtokens)
+![Architecture](https://img.shields.io/badge/Architecture-Clean_%26_SOLID-orange)
+![License](https://img.shields.io/badge/License-Educativo-lightgrey)
+
+API REST generica para operaciones CRUD sobre cualquier tabla de base de datos. Soporta multiples motores con una sola configuracion.
 
 ---
 
@@ -18,6 +24,7 @@ API REST generica para operaciones CRUD sobre cualquier tabla de base de datos. 
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Principios SOLID](#principios-solid)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Solucion de Problemas Comunes](#solucion-de-problemas-comunes)
 
 ---
 
@@ -76,6 +83,8 @@ API REST generica para operaciones CRUD sobre cualquier tabla de base de datos. 
 | .NET SDK | 9.0 o superior |
 | Visual Studio / VS Code | 2022 / Ultima version |
 | Base de datos | SQL Server, PostgreSQL, MySQL o MariaDB |
+
+> **Nota sobre Dapper**: Esta API utiliza [Dapper](https://github.com/DapperLib/Dapper) como Micro-ORM. A diferencia de Entity Framework, Dapper es extremadamente ligero y rapido porque trabaja directamente con SQL, sin las capas de abstraccion de un ORM completo. Esto lo hace ideal para APIs genericas donde el rendimiento es critico.
 
 ---
 
@@ -430,6 +439,58 @@ ApiGenerica/
 3. Probar endpoint de diagnostico: `GET /api/diagnostico/salud`
 4. Hacer login para obtener token
 5. Usar token en endpoints protegidos
+
+---
+
+## Solucion de Problemas Comunes
+
+A continuacion, se listan los errores mas frecuentes y como solucionarlos:
+
+### 1. Error de Conexion a la Base de Datos
+
+**Sintoma**: `A network-related or instance-specific error occurred...`
+
+**Solucion**:
+- Verifica que el servicio de la base de datos este corriendo
+- Si usas SQL Server, asegurate de que el nombre del servidor sea correcto (ej. `localhost` o `(localdb)\MSSQLLocalDB`)
+- Revisa que el `DatabaseProvider` en `appsettings.json` coincida exactamente con una de las llaves de `ConnectionStrings`
+
+### 2. El Token JWT no funciona (401 Unauthorized)
+
+**Sintoma**: Recibes un error 401 incluso despues de pegar el token.
+
+**Solucion**:
+- Asegurate de incluir la palabra `Bearer` seguida de un espacio antes del token: `Bearer eyJhbGci...`
+- Verifica que la `Jwt:Key` en tu configuracion tenga al menos 32 caracteres (256 bits)
+- Comprueba que el token no haya expirado
+
+### 3. Error con el Puerto (Puerto en uso)
+
+**Sintoma**: `Failed to bind to address http://localhost:5000`
+
+**Solucion**:
+- Cambia los puertos en el archivo `Properties/launchSettings.json`
+- O cierra la aplicacion que este usando ese puerto
+- Puedes buscar el proceso con: `netstat -ano | findstr :5000`
+
+### 4. Errores de Certificado SSL
+
+**Sintoma**: El navegador o Swagger muestran un error de "Conexion no privada".
+
+**Solucion**: Ejecuta el siguiente comando para confiar en el certificado de desarrollo de .NET:
+
+```bash
+dotnet dev-certs https --trust
+```
+
+### 5. Error CS0234: El tipo o nombre no existe
+
+**Sintoma**: Errores de compilacion relacionados con namespaces o paquetes.
+
+**Solucion**:
+- Ejecuta `dotnet restore` para restaurar los paquetes NuGet
+- Verifica que las versiones de los paquetes sean compatibles con .NET 9.0
+- Limpia y recompila: `dotnet clean && dotnet build`
 
 ---
 
